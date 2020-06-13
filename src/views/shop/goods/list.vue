@@ -1,12 +1,14 @@
 <!--
  * @Description:
  * @Author: 雪中无处寻
- * @Date: 2020-06-13 16:36:19
- * @LastEditTime: 2020-06-13 22:35:09
+ * @Date: 2020-06-13 22:23:35
+ * @LastEditTime: 2020-06-13 22:23:47
  * @LastEditors: 雪中无处寻
 -->
 <template>
-  <el-container>eeee</el-container>
+  <div>
+    商品列表
+  </div>
 </template>
 
 <script type="text/javascript">
@@ -22,4 +24,3 @@ export default {
 
 <style lang="scss" scoped>
 </style>
-4
