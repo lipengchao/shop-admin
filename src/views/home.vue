@@ -29,7 +29,7 @@
           </el-submenu>
         </el-menu>
       </el-header>
-      <el-container style="height: 100%; padding-bottom: 60px">
+      <el-container style="height: 100%;">
         <!-- 侧边布局 -->
         <el-aside width="200px">
           <el-menu
@@ -43,10 +43,40 @@
           </el-menu>
         </el-aside>
         <!-- 主布局 -->
-        <el-main>Main</el-main>
+        <el-main class="bg-light">
+          <!-- 面包屑导航 -->
+          <div class="border-bottom breadcrumb-div mb-3 bg-white" v-if="breads.length > 0">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item
+                v-for="(item, index) in breads"
+                :key="item.name"
+                :to="{ path: item.path }"
+                @click="selectMenu(index + 1)"
+               >
+               {{item.title}}
+              </el-breadcrumb-item>
+            </el-breadcrumb>
+          </div>
+          <!-- 主内容 -->
+          <router-view></router-view>
+          <el-backtop target=".el-main" :bottom="100">
+            <div
+              style="{
+                height: 100%;
+                width: 100%;
+                background-color: #f2f5f6;
+                box-shadow: 0 0 6px rgba(0,0,0, .12);
+                text-align: center;
+                line-height: 40px;
+                color: #1989fa;
+              }"
+            >
+              UP
+            </div>
+          </el-backtop>
+        </el-main>
       </el-container>
     </el-container>
-    <!-- <router-view></router-view> -->
   </div>
 </template>
 
@@ -56,7 +86,23 @@ export default {
   data () {
     return {
       circleUrl: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-      navBar: this.$conf.navBar
+      navBar: this.$conf.navBar,
+      breads: []
+    }
+  },
+  created () {
+    this.getRouterBreads()
+    // 初始化选中菜单
+    this._initNavBar()
+  },
+  watch: {
+    '$route' (to, from) {
+      // 本地存储
+      localStorage.setItem('navActive', JSON.stringify({
+        hIndex: this.navBar.active,
+        sIndex: this.slideMenuActive
+      }))
+      this.getRouterBreads()
     }
   },
   computed: {
@@ -88,16 +134,73 @@ export default {
      */
     handleSelect (key, keyPath) {
       this.navBar.active = key
+      // 默认选中跳转到当前激活那个
+      this.slideMenuActive = '0'
+      if (this.slideMenus) {
+        this.$router.push({
+          name: this.slideMenus[this.slideMenuActive].pathname
+        })
+      }
     },
     /**
      * 侧边栏选择事件
      */
     slideSelect (key, keyPath) {
       this.slideMenuActive = key
+      // 跳转到指定页面
+      this.$router.push({
+        name: this.slideMenus[key].pathname
+      })
+    },
+
+    /**
+     * 获取面包屑导航
+     */
+    getRouterBreads () {
+      const b = this.$route.matched.filter(v => v.name)
+      const arr = []
+      b.forEach((v, k) => {
+        // 过滤home和index
+        if (v.name === 'index' || v.name === 'home') return
+        arr.push({
+          name: v.name,
+          path: v.path,
+          title: v.meta.title
+        })
+      })
+      if (arr.length > 0) {
+        arr.unshift({ name: 'index', path: '/index', title: '后台首页' })
+      }
+
+      this.breads = arr
+    },
+
+    selectMenu (index) {
+      console.log(this.navBar.active, index)
+      this.navBar.active = this.navBar.active - index
+    },
+
+    /**
+     * 初始化选中菜单
+     */
+    _initNavBar () {
+     let navObj =  localStorage.getItem('navActive')
+     if (navObj) {
+       navObj = JSON.parse(navObj)
+       this.navBar.active = navObj.hIndex
+       this.slideMenuActive = navObj.sIndex
+     }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+  .breadcrumb-div {
+    padding: 20px;
+    margin: -20px;
+  }
+  .el-menu {
+    height: 100%;
+  }
 </style>
