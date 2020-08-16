@@ -43,7 +43,7 @@
           </el-menu>
         </el-aside>
         <!-- 主布局 -->
-        <el-main class="bg-light">
+        <el-main class="bg-light" style="padding-bottom: 40px">
           <!-- 面包屑导航 -->
           <div class="border-bottom breadcrumb-div mb-3 bg-white" v-if="breads.length > 0">
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -81,118 +81,118 @@
 </template>
 
 <script type="text/javascript">
-export default {
-  name: '',
-  data () {
-    return {
-      circleUrl: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-      navBar: this.$conf.navBar,
-      breads: []
-    }
-  },
-  created () {
-    this.getRouterBreads()
-    // 初始化选中菜单
-    this._initNavBar()
-  },
-  watch: {
-    '$route' (to, from) {
-      // 本地存储
-      localStorage.setItem('navActive', JSON.stringify({
-        hIndex: this.navBar.active,
-        sIndex: this.slideMenuActive
-      }))
+  export default {
+    name: '',
+    data () {
+      return {
+        circleUrl: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
+        navBar: this.$conf.navBar,
+        breads: []
+      }
+    },
+    created () {
       this.getRouterBreads()
-    }
-  },
-  computed: {
-    // 当前激活的navbar
-    currenNavBar () {
-      return this.navBar.list[this.navBar.active] || {}
+      // 初始化选中菜单
+      this._initNavBar()
     },
-
-    // 根据header计算当前要显示的侧边栏
-    slideMenus () {
-      return this.currenNavBar.submenu || []
+    watch: {
+      '$route' (to, from) {
+          // 本地存储
+          localStorage.setItem('navActive', JSON.stringify({
+            hIndex: this.navBar.active,
+            sIndex: this.slideMenuActive
+          }))
+          this.getRouterBreads()
+      }
     },
-
-    // 侧边栏当前激活的navbar索引
-    slideMenuActive: {
-      get () {
-        return this.currenNavBar.subActive || '0'
+    computed: {
+      // 当前激活的navbar
+      currenNavBar () {
+        return this.navBar.list[this.navBar.active] || {}
       },
-      set (val) {
-        this.currenNavBar.subActive = val
+
+      // 根据header计算当前要显示的侧边栏
+      slideMenus () {
+        return this.currenNavBar.submenu || []
+      },
+
+      // 侧边栏当前激活的navbar索引
+      slideMenuActive: {
+        get () {
+          return this.currenNavBar.subActive || '0'
+        },
+        set (val) {
+          this.currenNavBar.subActive = val
+        }
       }
-    }
-  },
-  methods: {
-    /**
-     * 头部导航栏选择事件
-     * @param {Object} key
-     * @param {Object} keyPath
-     */
-    handleSelect (key, keyPath) {
-      this.navBar.active = key
-      // 默认选中跳转到当前激活那个
-      this.slideMenuActive = '0'
-      if (this.slideMenus) {
+    },
+    methods: {
+      /**
+       * 头部导航栏选择事件
+       * @param {Object} key
+       * @param {Object} keyPath
+       */
+      handleSelect (key, keyPath) {
+        this.navBar.active = key
+        // 默认选中跳转到当前激活那个
+        this.slideMenuActive = '0'
+        if (this.slideMenus) {
+          this.$router.push({
+            name: this.slideMenus[this.slideMenuActive].pathname
+          })
+        }
+      },
+      /**
+       * 侧边栏选择事件
+       */
+      slideSelect (key, keyPath) {
+        this.slideMenuActive = key
+        // 跳转到指定页面
         this.$router.push({
-          name: this.slideMenus[this.slideMenuActive].pathname
+          name: this.slideMenus[key].pathname
         })
-      }
-    },
-    /**
-     * 侧边栏选择事件
-     */
-    slideSelect (key, keyPath) {
-      this.slideMenuActive = key
-      // 跳转到指定页面
-      this.$router.push({
-        name: this.slideMenus[key].pathname
-      })
-    },
+      },
 
-    /**
-     * 获取面包屑导航
-     */
-    getRouterBreads () {
-      const b = this.$route.matched.filter(v => v.name)
-      const arr = []
-      b.forEach((v, k) => {
-        // 过滤home和index
-        if (v.name === 'index' || v.name === 'home') return
-        arr.push({
-          name: v.name,
-          path: v.path,
-          title: v.meta.title
+      /**
+       * 获取面包屑导航
+       */
+      getRouterBreads () {
+        const b = this.$route.matched.filter(v => v.name)
+        const arr = []
+        b.forEach((v, k) => {
+          // 过滤home和index
+          if (v.name === 'index' || v.name === 'home') return
+          arr.push({
+            name: v.name,
+            path: v.path,
+            title: v.meta.title
+          })
         })
-      })
-      if (arr.length > 0) {
-        arr.unshift({ name: 'index', path: '/index', title: '后台首页' })
+        if (arr.length > 0) {
+          arr.unshift({ name: 'index', path: '/index', title: '后台首页' })
+        }
+
+        this.breads = arr
+      },
+
+      selectMenu (index) {
+        console.log(this.navBar.active, index)
+        this.navBar.active = this.navBar.active - index
+      },
+
+      /**
+       * 初始化选中菜单
+       */
+      _initNavBar () {
+       let navObj =  localStorage.getItem('navActive')
+       if (navObj) {
+         navObj = JSON.parse(navObj)
+         this.navBar.active = navObj.hIndex
+         this.slideMenuActive = navObj.sIndex
+       }
       }
-
-      this.breads = arr
-    },
-
-    selectMenu (index) {
-      console.log(this.navBar.active, index)
-      this.navBar.active = this.navBar.active - index
-    },
-
-    /**
-     * 初始化选中菜单
-     */
-    _initNavBar () {
-     let navObj =  localStorage.getItem('navActive')
-     if (navObj) {
-       navObj = JSON.parse(navObj)
-       this.navBar.active = navObj.hIndex
-       this.slideMenuActive = navObj.sIndex
-     }
     }
   }
-}
 </script>
 
 <style lang="scss" scoped>
