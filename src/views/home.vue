@@ -43,7 +43,7 @@
           </el-menu>
         </el-aside>
         <!-- 主布局 -->
-        <el-main class="bg-light" style="padding-bottom: 40px">
+        <el-main class="bg-light" style="padding-bottom: 40px; position: relative;">
           <!-- 面包屑导航 -->
           <div class="border-bottom breadcrumb-div mb-3 bg-white" v-if="breads.length > 0">
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -133,6 +133,12 @@
        * @param {Object} keyPath
        */
       handleSelect (key, keyPath) {
+        if (key === '100-1') {
+          return console.log('修改资料')
+        }
+        if (key === '100-2') {
+          return console.log('退出登录')
+        }
         this.navBar.active = key
         // 默认选中跳转到当前激活那个
         this.slideMenuActive = '0'
