@@ -7,9 +7,9 @@
   >
     {{item.name}}
     <el-dropdown class="ml-auto">
-                <span class="btn btn-light btn-sm border">
-                  {{item.num}}<i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
+      <span class="btn btn-light btn-sm border">
+        {{item.num}}<i class="el-icon-arrow-down el-icon--right"></i>
+      </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.stop.native="openAlbumModal({index, item})">修改</el-dropdown-item>
         <el-dropdown-item @click.stop.native="albumDel(index)">删除</el-dropdown-item>
