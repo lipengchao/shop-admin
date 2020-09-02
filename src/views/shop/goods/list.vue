@@ -19,7 +19,7 @@
           <el-button type="danger" size="mini">批量删除</el-button>
           <!-- 右边 -->
           <div class="ml-auto" v-show="!superSearch">
-            <el-input class="goods-search" v-model="form.keyword" placeholder="请求输入商品名称" size="mini"></el-input>
+            <el-input class="goods-search" v-model="queryFrom.name" placeholder="请求输入商品名称" size="mini"></el-input>
             <el-button type="info" size="mini">搜索</el-button>
             <el-button size="mini" @click="superSearch = true">高级搜索</el-button>
           </div>
@@ -29,6 +29,31 @@
             <span>高级收搜</span>
             <el-button type="text" @click="superSearch = false">收起</el-button>
           </div>
+          <el-form inline ref="form" :model="queryFrom" label-width="80px">
+            <el-form-item label="商品名称">
+              <el-input v-model="queryFrom.name" placeholder="请输入商品名称"></el-input>
+            </el-form-item>
+            <el-form-item label="商品编码">
+              <el-input v-model="queryFrom.code" placeholder="请输入商品编码"></el-input>
+            </el-form-item>
+            <el-form-item label="商品类型">
+              <el-select v-model="value" filterable placeholder="请选择商品类型">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="商品分类">
+              <el-input v-model="queryFrom.category"></el-input>
+            </el-form-item>
+            <el-form-item class="form-btn">
+              <el-button type="info" size="mini" @click="searchEvent">搜索</el-button>
+              <el-button size="mini" @click="clearSearch">清空筛选条件</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
     </el-tabs>
@@ -49,9 +74,29 @@ export default {
         { name: '回收站' }
       ],
       superSearch: false,
-      form: {
-        keyword: ''
-      }
+      queryFrom: {
+        name: '',
+        code: '',
+        type: '',
+        category: ''
+      },
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: ''
     }
   },
   methods: {
@@ -62,6 +107,19 @@ export default {
      */
     handleClick(tab, event) {
       console.log(tab, event)
+    },
+
+    /**
+     * 搜索
+     */
+    searchEvent() {},
+
+    /**
+     * 清空搜索条件
+     */
+    clearSearch() {
+      this.queryFrom = this.$options.data().queryFrom
+      this.superSearch = false
     }
   }
 }
@@ -91,5 +149,8 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+  .form-btn {
+    margin-left: 20px;
   }
 </style>
